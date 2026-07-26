@@ -790,7 +790,7 @@ export default function PratoScreen() {
   if (phase === 'intro') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.background}
         resizeMode="cover"
       >
@@ -829,7 +829,7 @@ export default function PratoScreen() {
   if (phase === 'chart') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.background}
         resizeMode="cover"
       >

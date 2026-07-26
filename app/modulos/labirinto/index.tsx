@@ -45,13 +45,15 @@ export default function LabirintoScreen() {
 
   const BOARD_SIZE = Math.min(windowWidth * 0.95, windowHeight * 0.5, 450);
 
-  const [phase, setPhase] = useState<'intro' | 'game' | 'finished' | 'game_over'>('intro');
+  const [phase, setPhase] = useState<'intro' | 'instructions' | 'game' | 'finished' | 'game_over'>(
+    'intro'
+  );
   const [mazeMap, setMazeMap] = useState<string[][]>(INITIAL_MAZE);
   const [playerPos, setPlayerPos] = useState({ row: START_ROW, col: START_COL });
   const [score, setScore] = useState(0);
   const [hasWon, setHasWon] = useState(false);
   const [showIntroBtn, setShowIntroBtn] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(45);
+  const [timeLeft, setTimeLeft] = useState(60);
 
   const insets = useSafeAreaInsets();
   const [fontsLoaded] = useExpoFonts({ Chewy_400Regular });
@@ -161,14 +163,14 @@ export default function LabirintoScreen() {
     setPlayerPos({ row: START_ROW, col: START_COL });
     setScore(0);
     setHasWon(false);
-    setTimeLeft(45);
+    setTimeLeft(60);
     setPhase('game');
   };
 
   if (phase === 'intro') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.background}
         resizeMode="cover"
       >
@@ -192,7 +194,10 @@ export default function LabirintoScreen() {
               </Text>
               {showIntroBtn && (
                 <Animated.View entering={FadeIn.duration(800)} style={animatedPulseStyle}>
-                  <TouchableOpacity style={styles.introCircleBtn} onPress={() => setPhase('game')}>
+                  <TouchableOpacity
+                    style={styles.introCircleBtn}
+                    onPress={() => setPhase('instructions')}
+                  >
                     <MaterialCommunityIcons name="chevron-right" size={38} color="#fff" />
                   </TouchableOpacity>
                 </Animated.View>
@@ -204,10 +209,51 @@ export default function LabirintoScreen() {
     );
   }
 
+  if (phase === 'instructions') {
+    return (
+      <ImageBackground
+        source={require('@/assets/images/fundo_labirinto.png')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.introContainerClean}>
+          <View style={styles.cardAnchor}>
+            <Animated.View style={[styles.introHomeBtn, animatedPulseStyle]}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <MaterialCommunityIcons name="home" size={24} color="#fff" />
+              </TouchableOpacity>
+            </Animated.View>
+            <View style={styles.introCard}>
+              <Text style={styles.introTitle}>⚠️ Atenção</Text>
+
+              <Text style={styles.introText}>
+                O Glicemilton está em hipoglicemia e precisa da sua ajuda! Colete todos os cubos de
+                açúcar pelo caminho, mas fique atento: o tempo está correndo!
+              </Text>
+
+              <Text style={styles.introText}>
+                Faça tudo com bastante atenção, pois o caminho é um labirinto e você precisará
+                encontrar a saída para chegar à chegada.
+              </Text>
+
+              <Text style={styles.introText}>Boa sorte!</Text>
+
+              <Animated.View entering={FadeIn.duration(800)} style={animatedPulseStyle}>
+                <TouchableOpacity style={styles.playBtn} onPress={() => setPhase('game')}>
+                  <MaterialCommunityIcons name="play" size={40} color="#fff" />
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
+          </View>
+        </View>
+      </ImageBackground>
+    );
+  }
+
   if (phase === 'finished') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.background}
         resizeMode="cover"
       >
@@ -219,7 +265,7 @@ export default function LabirintoScreen() {
   if (phase === 'game_over') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.finishedContainer}
         resizeMode="cover"
       >
@@ -480,6 +526,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 4,
   },
+  instructionsPlaceholder: {
+    fontSize: 18,
+    color: '#5D4037',
+    textAlign: 'center',
+    lineHeight: 26,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    paddingHorizontal: 10,
+  },
+  playBtn: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#8DB863',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+  },
+
   finishedContainer: {
     flex: 1,
     alignItems: 'center',
