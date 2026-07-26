@@ -37,16 +37,22 @@ export default function MedicamentosScreen() {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
   const STORAGE_SPLIT = '59.36%';
-
   const STORAGE_ASPECT = 1080 / 1920;
   const APPLICATION_ASPECT = 535 / 1024;
 
   const headerSpace = Math.max(insets.top, 20) + 110;
   const availableHeight = windowHeight - headerSpace - Math.max(insets.bottom, 20);
+
   const storageWidth = Math.min(windowWidth, availableHeight * STORAGE_ASPECT, 480);
   const storageHeight = storageWidth / STORAGE_ASPECT;
-  const appHeight = availableHeight;
-  const appWidth = appHeight * APPLICATION_ASPECT;
+
+  let appHeight = availableHeight;
+  let appWidth = appHeight * APPLICATION_ASPECT;
+
+  if (appWidth > windowWidth * 0.95) {
+    appWidth = windowWidth * 0.95;
+    appHeight = appWidth / APPLICATION_ASPECT;
+  }
 
   useEffect(() => {
     if (phase === 'finished') {
@@ -98,7 +104,7 @@ export default function MedicamentosScreen() {
   if (phase === 'intro') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.background}
         resizeMode="cover"
       >
@@ -150,7 +156,7 @@ export default function MedicamentosScreen() {
             <MaterialCommunityIcons name="home" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.gameTitleHeader}>
-            Qual melhor local para armazenar a caneta de insulina em uso?
+            Qual o melhor local para armazenar a caneta de insulina em uso?
           </Text>
         </View>
 
@@ -164,7 +170,7 @@ export default function MedicamentosScreen() {
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
-                  { top: '48%', left: '10%', width: '28%', height: '18%' },
+                  { top: '48%', left: '10%', width: '28%', height: '10%' },
                 ]}
                 onPress={() =>
                   showFeedback(
@@ -181,7 +187,7 @@ export default function MedicamentosScreen() {
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
-                  { top: '48%', right: '12%', width: '28%', height: '18%' },
+                  { top: '48%', right: '12%', width: '28%', height: '10%' },
                 ]}
                 onPress={() =>
                   showFeedback(
@@ -209,11 +215,11 @@ export default function MedicamentosScreen() {
 
   if (phase === 'application' || phase === 'finished') {
     return (
-      <View style={styles.storageWrapper}>
-        <View
-          style={[styles.topBackground, { backgroundColor: '#EAD7C3', bottom: 0, height: '100%' }]}
-        />
-
+      <ImageBackground
+        source={require('@/assets/images/fundo_insulina.png')}
+        style={styles.background}
+        resizeMode="cover"
+      >
         <View style={[styles.screenHeader, { paddingTop: Math.max(insets.top, 20) + 10 }]}>
           <TouchableOpacity style={styles.topHomeBtnHeader} onPress={() => router.back()}>
             <MaterialCommunityIcons name="home" size={24} color="#fff" />
@@ -223,13 +229,20 @@ export default function MedicamentosScreen() {
           </Text>
         </View>
 
-        <View style={[styles.gameBoardApplication, { width: appWidth, height: appHeight }]}>
-          <ImageBackground
-            source={require('@/assets/images/uso_insulina.jpg')}
-            style={styles.background}
-            resizeMode="cover"
-          >
-            <View style={styles.interactiveArea}>
+        <View style={[styles.characterContainer, { paddingTop: headerSpace }]}>
+          <View style={{ width: appWidth, height: appHeight, position: 'relative' }}>
+            <Image
+              source={require('@/assets/images/glicemilton_insulina.png')}
+              style={{ width: '100%', height: '100%', position: 'absolute' }}
+              resizeMode="contain"
+            />
+
+            <View
+              style={[
+                styles.interactiveArea,
+                { position: 'absolute', width: '100%', height: '100%' },
+              ]}
+            >
               <TouchableOpacity
                 style={styles.wrongAreaFull}
                 activeOpacity={1}
@@ -240,53 +253,44 @@ export default function MedicamentosScreen() {
                     'Este não é o local correto. A insulina deve ser aplicada na barriga, coxas ou parte posterior dos braços.'
                   )
                 }
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel="Área incorreta do cenário"
               />
 
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
                   {
-                    top: '58%',
-                    left: '22%',
-                    width: '14%',
-                    height: '13%',
-                    transform: [{ rotate: '-82deg' }],
+                    top: '55%',
+                    left: '25%',
+                    width: '12%',
+                    height: '9%',
+                    transform: [{ rotate: '-90deg' }],
                   },
                 ]}
                 onPress={() =>
                   showFeedback(true, 'Parabéns!', 'Os braços são ótimos locais para aplicação!')
                 }
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel="Braço esquerdo do personagem"
               />
 
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
                   {
-                    top: '63%',
-                    right: '24%',
-                    width: '15%',
-                    height: '10.5%',
-                    transform: [{ rotate: '35deg' }],
+                    top: '55%',
+                    right: '19%',
+                    width: '17%',
+                    height: '10%',
+                    transform: [{ rotate: '-40deg' }],
                   },
                 ]}
                 onPress={() =>
                   showFeedback(true, 'Parabéns!', 'Excelente! O braço é um local recomendado.')
                 }
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel="Braço direito do personagem"
               />
 
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
-                  { top: '73%', left: '41%', width: '30%', height: '8%' },
+                  { top: '68%', left: '35%', width: '36%', height: '9%' },
                 ]}
                 onPress={() =>
                   showFeedback(
@@ -295,15 +299,12 @@ export default function MedicamentosScreen() {
                     'A barriga (região abdominal) é um dos melhores locais para absorção da insulina!'
                   )
                 }
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel="Barriga, região abdominal"
               />
 
               <TouchableOpacity
                 style={[
                   styles.invisibleButton,
-                  { top: '81%', left: '43%', width: '33%', height: '8%' },
+                  { top: '73%', left: '60%', width: '13%', height: '8%' },
                 ]}
                 onPress={() =>
                   showFeedback(
@@ -312,26 +313,37 @@ export default function MedicamentosScreen() {
                     'As coxas são locais seguros e muito usados para aplicar a insulina.'
                   )
                 }
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel="Coxas, região das pernas"
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.invisibleButton,
+                  { top: '73%', left: '34%', width: '13%', height: '8%' },
+                ]}
+                onPress={() =>
+                  showFeedback(
+                    true,
+                    'Parabéns!',
+                    'As coxas são locais seguros e muito usados para aplicar a insulina.'
+                  )
+                }
               />
             </View>
-
-            <FeedbackModal
-              visible={feedbackVisible}
-              data={feedbackData}
-              onClose={handleCloseFeedback}
-            />
-
-            <VictoryModal
-              visible={phase === 'finished'}
-              pointsEarned={10}
-              moduleName="Tomar Medicamentos"
-            />
-          </ImageBackground>
+          </View>
         </View>
-      </View>
+
+        <FeedbackModal
+          visible={feedbackVisible}
+          data={feedbackData}
+          onClose={handleCloseFeedback}
+        />
+
+        <VictoryModal
+          visible={phase === 'finished'}
+          pointsEarned={10}
+          moduleName="Tomar Medicamentos"
+        />
+      </ImageBackground>
     );
   }
 
@@ -381,6 +393,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  characterContainer: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   screenHeader: {
     position: 'absolute',
     top: 0,
@@ -424,10 +442,10 @@ const styles = StyleSheet.create({
   },
   wrongAreaFull: {
     position: 'absolute',
-    top: '33%',
-    bottom: '17%',
-    left: '30%',
-    right: '22%',
+    top: '21.5%',
+    bottom: '12%',
+    left: '12%',
+    right: '14%',
     zIndex: 10,
   },
   storageWrapper: {
@@ -453,10 +471,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#613915',
   },
   gameBoardStorage: {
-    overflow: 'hidden',
-    elevation: 10,
-  },
-  gameBoardApplication: {
     overflow: 'hidden',
     elevation: 10,
   },

@@ -25,10 +25,11 @@ interface QuizScreenState {
   lastRoll: number | null;
   isLocked: boolean;
   quizVisible: boolean;
-  phase: 'intro' | 'playing' | 'finished';
+  phase: 'intro' | 'instructions' | 'playing' | 'finished';
 }
 
 type QuizScreenAction =
+  | { type: 'SHOW_INSTRUCTIONS' }
   | { type: 'START_GAME' }
   | { type: 'ROLL_DICE'; payload: number }
   | { type: 'ANSWER_CORRECT' }
@@ -45,6 +46,9 @@ const INITIAL_SCREEN_STATE: QuizScreenState = {
 
 function quizScreenReducer(state: QuizScreenState, action: QuizScreenAction): QuizScreenState {
   switch (action.type) {
+    case 'SHOW_INSTRUCTIONS':
+      return { ...state, phase: 'instructions' };
+
     case 'START_GAME':
       return { ...state, phase: 'playing' };
 
@@ -82,7 +86,7 @@ function quizScreenReducer(state: QuizScreenState, action: QuizScreenAction): Qu
     }
 
     case 'RESET':
-      return { ...INITIAL_SCREEN_STATE, phase: 'playing' };
+      return { ...INITIAL_SCREEN_STATE, phase: 'intro' };
 
     default:
       return state;
@@ -125,7 +129,7 @@ export default function QuizScreen() {
         Animated.timing(nextBtnOpacity, {
           toValue: 1,
           duration: 800,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       }, 1000);
 
@@ -176,7 +180,7 @@ export default function QuizScreen() {
     return (
       <View style={styles.introWrapper}>
         <ImageBackground
-          source={require('@/assets/images/background.jpg')}
+          source={require('@/assets/images/background_consertado.png')}
           style={styles.introBackground}
           resizeMode="cover"
         >
@@ -208,15 +212,63 @@ export default function QuizScreen() {
                 </Text>
 
                 {showIntroBtn && (
-                  <Animated.View style={{ opacity: nextBtnOpacity }}>
-                    <TouchableOpacity
-                      style={styles.introCircleBtn}
-                      onPress={() => dispatch({ type: 'START_GAME' })}
-                    >
-                      <MaterialCommunityIcons name="chevron-right" size={38} color="#fff" />
-                    </TouchableOpacity>
-                  </Animated.View>
+                  <AnimatedTouchableOpacity
+                    style={[styles.introCircleBtn, { opacity: nextBtnOpacity }]}
+                    onPress={() => dispatch({ type: 'SHOW_INSTRUCTIONS' })}
+                    activeOpacity={0.8}
+                  >
+                    <MaterialCommunityIcons name="chevron-right" size={38} color="#fff" />
+                  </AnimatedTouchableOpacity>
                 )}
+              </View>
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  }
+
+  if (state.phase === 'instructions') {
+    return (
+      <View style={styles.introWrapper}>
+        <ImageBackground
+          source={require('@/assets/images/fundo_tabuleiro.png')}
+          style={styles.introBackground}
+          resizeMode="cover"
+        >
+          <View style={styles.introContainerClean}>
+            <View style={styles.cardAnchor}>
+              <AnimatedTouchableOpacity
+                style={[styles.introHomeBtn, { transform: [{ scale: homePulseAnim }] }]}
+                onPress={() => {
+                  dispatch({ type: 'RESET' });
+                  router.back();
+                }}
+              >
+                <MaterialCommunityIcons name="home" size={22} color="#fff" />
+              </AnimatedTouchableOpacity>
+
+              <View style={styles.introCard}>
+                <Text style={styles.introTitle}>⚠️ Atenção!</Text>
+
+                <Text style={styles.introText}>
+                  Gire o dado e responda à pergunta. Ao acertar, o Glicemilton avançará
+                  automaticamente o número de folhas sorteado.
+                </Text>
+
+                <Text style={styles.introText}>
+                  Se errar, ele não avançará e terá que tentar novamente.
+                </Text>
+
+                <Text style={styles.introText}>Boa sorte!</Text>
+
+                <AnimatedTouchableOpacity
+                  style={[styles.playBtn, { transform: [{ scale: homePulseAnim }] }]}
+                  onPress={() => dispatch({ type: 'START_GAME' })}
+                  activeOpacity={0.8}
+                >
+                  <MaterialCommunityIcons name="play" size={40} color="#fff" />
+                </AnimatedTouchableOpacity>
               </View>
             </View>
           </View>
@@ -228,7 +280,7 @@ export default function QuizScreen() {
   if (state.phase === 'finished') {
     return (
       <ImageBackground
-        source={require('@/assets/images/background.jpg')}
+        source={require('@/assets/images/background_consertado.png')}
         style={styles.container}
         resizeMode="cover"
       >
@@ -238,7 +290,11 @@ export default function QuizScreen() {
   }
 
   return (
-    <View style={styles.gameContainer}>
+    <ImageBackground
+      source={require('@/assets/images/fundo_tabuleiro.png')}
+      style={styles.playingContainer}
+      resizeMode="cover"
+    >
       <View style={styles.gameOverlay}>
         <View style={styles.floatingHeaderOnlyHome}>
           <AnimatedTouchableOpacity
@@ -294,15 +350,22 @@ export default function QuizScreen() {
       {state.quizVisible && currentQuestion && (
         <QuizModal visible={state.quizVisible} question={currentQuestion} onAnswer={handleAnswer} />
       )}
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  playingContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   loadingContainer: {
     flex: 1,
@@ -409,13 +472,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   introText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#5D4037',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 26,
     fontWeight: '600',
     marginBottom: 24,
-    paddingHorizontal: 8,
+  },
+  instructionsPlaceholder: {
+    fontSize: 18,
+    color: '#5D4037',
+    textAlign: 'center',
+    lineHeight: 26,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    paddingHorizontal: 10,
   },
   failureOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -470,6 +541,15 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     backgroundColor: '#6D4C41',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  playBtn: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#8DB863',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
