@@ -15,13 +15,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
 import VictoryModal from '../../../components/VictoryModal';
 import { useGame } from '../../../context/GameContext';
 
+type ScreenState = 'CONCEPT' | 'INSTRUCTIONS' | 'PLAYING';
+
 export default function CartoesScreen() {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
-  const [showIntro, setShowIntro] = useState(true);
+  const [currentScreen, setCurrentScreen] = useState<ScreenState>('CONCEPT');
   const insets = useSafeAreaInsets();
 
   const [showIntroBtn, setShowIntroBtn] = useState(false);
@@ -32,12 +33,12 @@ export default function CartoesScreen() {
   const [showVictory, setShowVictory] = useState(false);
 
   const handleGameComplete = useCallback(() => {
-  addPoints ( 'modulo_cartoes' ,  10 ) ;
+    addPoints('modulo_cartoes', 10);
     setShowVictory(true);
   }, [addPoints]);
 
   useEffect(() => {
-    if (showIntro) {
+    if (currentScreen === 'CONCEPT') {
       const timer = setTimeout(() => {
         setShowIntroBtn(true);
         Animated.timing(btnOpacity, {
@@ -52,7 +53,7 @@ export default function CartoesScreen() {
       setShowIntroBtn(false);
       btnOpacity.setValue(0);
     }
-  }, [showIntro, btnOpacity]);
+  }, [currentScreen, btnOpacity]);
 
   useEffect(() => {
     const animation = Animated.loop(
@@ -67,10 +68,10 @@ export default function CartoesScreen() {
 
   if (!fontsLoaded) return null;
 
-  if (showIntro) {
+  if (currentScreen === 'CONCEPT') {
     return (
       <ImageBackground
-        source={require('../../../assets/images/background.jpg')}
+        source={require('../../../assets/images/background_consertado.png')}
         style={styles.container}
         resizeMode="cover"
       >
@@ -100,14 +101,15 @@ export default function CartoesScreen() {
                 No manejo do diabetes, a prevenção activa de picos (hiper) e quedas (hipoglicemia) é
                 crucial. Agir nas duas frentes é o segredo para o bom controle glicêmico.
               </Text>
+
               {showIntroBtn && (
                 <Animated.View style={{ opacity: btnOpacity }}>
                   <TouchableOpacity
                     style={styles.startButton}
-                    onPress={() => setShowIntro(false)}
+                    onPress={() => setCurrentScreen('INSTRUCTIONS')}
                     accessible={true}
                     accessibilityRole="button"
-                    accessibilityLabel="Iniciar jogo"
+                    accessibilityLabel="Avançar para instruções"
                   >
                     <Ionicons name="chevron-forward" size={40} color="#FFF" />
                   </TouchableOpacity>
@@ -120,16 +122,69 @@ export default function CartoesScreen() {
     );
   }
 
+  if (currentScreen === 'INSTRUCTIONS') {
+    return (
+      <ImageBackground
+        source={require('../../../assets/images/fundo_resolver_problemas.png')}
+        style={styles.container}
+        resizeMode="cover"
+      >
+        <View style={{ position: 'absolute', top: insets.top + 15, left: 20, zIndex: 99 }}>
+          <Animated.View style={[styles.gameHomeBtn, { transform: [{ scale: homePulseAnim }] }]}>
+            <TouchableOpacity
+              onPress={() => setCurrentScreen('CONCEPT')}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Voltar para introdução"
+            >
+              <Ionicons name="home" size={24} color="#FFF" />
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+
+        <View style={styles.cardAnchor}>
+          <View style={styles.instructionCard}>
+            <Text style={styles.instructionTitle}>⚠️ Atenção!</Text>
+
+            <Text style={styles.instructionText}>
+              Encontre os pares corretos! Vire duas cartas por vez e combine cada problema com a sua
+              respectiva solução.
+            </Text>
+
+            <Text style={styles.instructionText}>Se acertar, o par permanecerá virado.</Text>
+
+            <Text style={styles.instructionText}>
+              Se errar, as cartas serão escondidas novamente. Continue até encontrar todos os pares.
+            </Text>
+
+            <Text style={styles.instructionText}>Boa sorte!</Text>
+
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={() => setCurrentScreen('PLAYING')}
+              activeOpacity={0.8}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Iniciar jogo"
+            >
+              <Ionicons name="play" size={36} color="white" style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ImageBackground>
+    );
+  }
+
   return (
     <ImageBackground
-      source={require('../../../assets/images/fundo_zoom.jpg')}
+      source={require('../../../assets/images/fundo_zoom.png')}
       style={styles.container}
       resizeMode="cover"
     >
       <View style={{ position: 'absolute', top: insets.top + 15, left: 20, zIndex: 99 }}>
         <Animated.View style={[styles.gameHomeBtn, { transform: [{ scale: homePulseAnim }] }]}>
           <TouchableOpacity
-            onPress={() => setShowIntro(true)}
+            onPress={() => setCurrentScreen('CONCEPT')}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Voltar para introdução"
@@ -149,6 +204,8 @@ export default function CartoesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -232,6 +289,56 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  instructionCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    width: '100%',
+    borderRadius: 24,
+    paddingVertical: 30,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  instructionTitle: {
+    fontFamily: 'Chewy_400Regular',
+    fontSize: 32,
+    color: '#6D4C41',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  instructionText: {
+    fontSize: 17,
+    color: '#5D4037',
+    textAlign: 'center',
+    lineHeight: 24,
+    fontWeight: '600',
+    marginBottom: 14,
+  },
+  instructionGoodLuck: {
+    fontFamily: 'Chewy_400Regular',
+    fontSize: 26,
+    color: '#6D4C41',
+    textAlign: 'center',
+    marginBottom: 18,
+  },
+  playButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#8DB863',
+    borderWidth: 4,
+    borderColor: '#DCEDC8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

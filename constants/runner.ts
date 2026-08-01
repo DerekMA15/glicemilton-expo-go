@@ -47,10 +47,10 @@ export const SPAWN_ITEMS_POOL: Omit<RunnerSpawnItem, 'id' | 'lane'>[] = [
   { type: 'BAD', label: 'Doces em excesso' },
 ];
 export const RUNNER_ASSETS = {
-  bgLandscape: require('@/assets/images/background.jpg'),
+  bgLandscape: require('@/assets/images/background_consertado.png'),
   antRunningIcon: require('@/assets/images/icone_atividade_fisica.png'),
   antHappy: require('@/assets/images/glicemilton_feliz.png'),
-  bgBlueInstructions: require('@/assets/images/fundo_azul.jpg'),
+  bgBlueInstructions: require('@/assets/images/fundo_azul.png'),
   antExplaining: require('@/assets/images/glicemilton_explicando.png'),
   bgdirtroad: require('@/assets/images/runner/bg_dirtroad.jpg'),
 

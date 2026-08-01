@@ -2,31 +2,36 @@ import { Chewy_400Regular } from '@expo-google-fonts/chewy';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CARTOES_COLORS, CardItem, TABULEIRO_CARTOES } from '@/constants/cartoes';
 
+const COLUMNS = 3;
+const ROWS = 4;
+const TOTAL_PAIRS = TABULEIRO_CARTOES.length / 2;
+
 export default function CardAssociationGrid({ onGameComplete }: { onGameComplete?: () => void }) {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
-
   const [firstSelected, setFirstSelected] = useState<CardItem | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<Set<string>>(new Set());
   const [wrongIds, setWrongIds] = useState<Set<string>>(new Set());
 
-  const timerRef = useRef<any>(null);
-
+  const insets = useSafeAreaInsets();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onGameCompleteRef = useRef(onGameComplete);
+
   useEffect(() => {
     onGameCompleteRef.current = onGameComplete;
   });
 
-  const tabuleiro = useMemo(() => {
-    const cartas = [...TABULEIRO_CARTOES];
-    for (let i = cartas.length - 1; i > 0; i--) {
+  const shuffledBoard = useMemo(() => {
+    const cards = [...TABULEIRO_CARTOES];
+    for (let i = cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
+      [cards[i], cards[j]] = [cards[j], cards[i]];
     }
-    return cartas;
+    return cards;
   }, []);
 
   useEffect(() => {
@@ -36,155 +41,160 @@ export default function CardAssociationGrid({ onGameComplete }: { onGameComplete
   }, []);
 
   useEffect(() => {
-    if (matchedPairs.size === 8) {
-      setTimeout(() => {
-        onGameCompleteRef.current?.();
-      }, 500);
+    if (matchedPairs.size === TOTAL_PAIRS) {
+      setTimeout(() => onGameCompleteRef.current?.(), 500);
     }
   }, [matchedPairs]);
 
   if (!fontsLoaded) return null;
 
-  const handleCardPress = (card: CardItem) => {
+  function handleCardPress(card: CardItem) {
     if (matchedPairs.has(card.pairId) || wrongIds.size > 0) return;
-
-    if (firstSelected && firstSelected.id === card.id) {
-      return;
-    }
+    if (firstSelected?.id === card.id) return;
 
     if (!firstSelected) {
       setFirstSelected(card);
-    } else {
-      if (firstSelected.pairId === card.pairId) {
-        setMatchedPairs((prev) => {
-          const next = new Set(prev);
-          next.add(card.pairId);
-          return next;
-        });
-        setFirstSelected(null);
-      } else {
-        setWrongIds(new Set([firstSelected.id, card.id]));
-        setFirstSelected(null);
-
-        timerRef.current = setTimeout(() => {
-          setWrongIds(new Set());
-        }, 1200);
-      }
+      return;
     }
-  };
+
+    if (firstSelected.pairId === card.pairId) {
+      setMatchedPairs((prev) => new Set([...prev, card.pairId]));
+      setFirstSelected(null);
+    } else {
+      setWrongIds(new Set([firstSelected.id, card.id]));
+      setFirstSelected(null);
+      timerRef.current = setTimeout(() => setWrongIds(new Set()), 1200);
+    }
+  }
+
+  function getCardStyle(card: CardItem) {
+    if (matchedPairs.has(card.pairId)) return styles.cardSuccess;
+    if (wrongIds.has(card.id)) return styles.cardError;
+    if (firstSelected?.id === card.id) return styles.cardSelected;
+    return styles.cardHidden;
+  }
+
+  function isRevealed(card: CardItem) {
+    return matchedPairs.has(card.pairId) || firstSelected?.id === card.id || wrongIds.has(card.id);
+  }
+
+  const rows: CardItem[][] = [];
+  for (let i = 0; i < shuffledBoard.length; i += COLUMNS) {
+    rows.push(shuffledBoard.slice(i, i + COLUMNS));
+  }
+
+  const TOP_SPACE = insets.top + 65;
+  const BOTTOM_SPACE = Math.max(insets.bottom, 12);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: TOP_SPACE, paddingBottom: BOTTOM_SPACE }]}>
       <View style={styles.gridContainer}>
-        <View style={styles.grid}>
-          {tabuleiro.map((item) => {
-            const isMatched = matchedPairs.has(item.pairId);
-            const isSelected = firstSelected?.id === item.id;
-            const isWrong = wrongIds.has(item.id);
+        {rows.map((row, rowIndex) => (
+          <View
+            key={`row-${rowIndex}`}
+            style={[styles.row, { marginBottom: rowIndex < rows.length - 1 ? 6 : 0 }]}
+          >
+            {row.map((card, colIndex) => {
+              const revealed = isRevealed(card);
+              const isMatched = matchedPairs.has(card.pairId);
+              const isWrong = wrongIds.has(card.id);
 
-            const isRevealed = isMatched || isSelected || isWrong;
+              return (
+                <TouchableOpacity
+                  key={card.id}
+                  style={[
+                    styles.card,
+                    getCardStyle(card),
+                    {
+                      marginRight: colIndex < COLUMNS - 1 ? 6 : 0,
+                    },
+                  ]}
+                  onPress={() => handleCardPress(card)}
+                  activeOpacity={isMatched ? 1 : 0.75}
+                  disabled={isMatched}
+                  accessibilityRole="button"
+                  accessibilityLabel={card.alt}
+                >
+                  {revealed ? (
+                    <Image source={card.image} style={styles.cardImage} resizeMode="contain" />
+                  ) : (
+                    <View style={styles.hiddenCover} />
+                  )}
 
-            let cardStyle = styles.cardHidden;
-
-            if (isMatched) {
-              cardStyle = styles.cardSuccess;
-            } else if (isWrong) {
-              cardStyle = styles.cardError;
-            } else if (isSelected) {
-              cardStyle = styles.cardSelected;
-            }
-
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={[styles.cardBase, cardStyle]}
-                onPress={() => handleCardPress(item)}
-                activeOpacity={isMatched ? 1 : 0.7}
-                disabled={isMatched}
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel={item.alt}
-              >
-                {isRevealed ? (
-                  <Image source={item.image} style={styles.cardImage} resizeMode="cover" />
-                ) : (
-                  <View style={styles.hiddenCover} />
-                )}
-
-                {isMatched && (
-                  <View style={styles.iconOverlay}>
-                    <MaterialCommunityIcons
-                      name="check-circle"
-                      size={18}
-                      color={CARTOES_COLORS.successBorder}
-                    />
-                  </View>
-                )}
-                {isWrong && (
-                  <View style={styles.iconOverlay}>
-                    <MaterialCommunityIcons
-                      name="close-circle"
-                      size={18}
-                      color={CARTOES_COLORS.errorBorder}
-                    />
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                  {isMatched && (
+                    <View style={styles.iconOverlay}>
+                      <MaterialCommunityIcons
+                        name="check-circle"
+                        size={20}
+                        color={CARTOES_COLORS.successBorder}
+                      />
+                    </View>
+                  )}
+                  {isWrong && (
+                    <View style={styles.iconOverlay}>
+                      <MaterialCommunityIcons
+                        name="close-circle"
+                        size={20}
+                        color={CARTOES_COLORS.errorBorder}
+                      />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        ))}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   gridContainer: {
+    flex: 1,
     width: '100%',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    justifyContent: 'center',
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    rowGap: 14,
   },
-  cardBase: {
-    width: '24%',
-    aspectRatio: 0.42,
-    borderRadius: 2,
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+  },
+  card: {
+    flex: 1,
+    borderRadius: 8,
     borderWidth: 2,
-    position: 'relative',
     overflow: 'hidden',
-    elevation: 2,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    position: 'relative',
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardImage: {
     width: '100%',
     height: '100%',
   },
   hiddenCover: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: CARTOES_COLORS.cardBackBg,
   },
   iconOverlay: {
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 10,
     padding: 1,
   },

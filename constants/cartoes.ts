@@ -36,9 +36,7 @@ export const CARTOES_THEORY = {
     'Você associou todos os problemas diários às suas respectivas soluções clínicas com maestria!',
 };
 
-
 export const TABULEIRO_CARTOES: CardItem[] = [
-
   {
     id: 'p1',
     pairId: 'par_1',
@@ -67,7 +65,6 @@ export const TABULEIRO_CARTOES: CardItem[] = [
     image: require('../assets/images/cartas/Jogo 2.2.png'),
     alt: 'Solução recomendada para o obstáculo 2.',
   },
-
   {
     id: 'p3',
     pairId: 'par_3',
@@ -82,7 +79,6 @@ export const TABULEIRO_CARTOES: CardItem[] = [
     image: require('../assets/images/cartas/Jogo 3.3.png'),
     alt: 'Solução recomendada para o obstáculo 3.',
   },
-
   {
     id: 'p4',
     pairId: 'par_4',
@@ -97,7 +93,6 @@ export const TABULEIRO_CARTOES: CardItem[] = [
     image: require('../assets/images/cartas/Jogo 4.4.png'),
     alt: 'Solução recomendada para o obstáculo 4.',
   },
-
   {
     id: 'p5',
     pairId: 'par_5',
@@ -112,7 +107,6 @@ export const TABULEIRO_CARTOES: CardItem[] = [
     image: require('../assets/images/cartas/Jogo 5.5.png'),
     alt: 'Solução recomendada para o obstáculo 5.',
   },
-
   {
     id: 'p6',
     pairId: 'par_6',
@@ -126,35 +120,5 @@ export const TABULEIRO_CARTOES: CardItem[] = [
     type: 'SOLUCAO',
     image: require('../assets/images/cartas/Jogo 6.6.png'),
     alt: 'Solução recomendada para o obstáculo 6.',
-  },
- 
-  {
-    id: 'p7',
-    pairId: 'par_7',
-    type: 'PROBLEMA',
-    image: require('../assets/images/cartas/Jogo 7.png'),
-    alt: 'Obstáculo diário 7 sobre manejo glicêmico.',
-  },
-  {
-    id: 's7',
-    pairId: 'par_7',
-    type: 'SOLUCAO',
-    image: require('../assets/images/cartas/Jogo 7.7.png'),
-    alt: 'Solução recomendada para o obstáculo 7.',
-  },
-
-  {
-    id: 'p8',
-    pairId: 'par_8',
-    type: 'PROBLEMA',
-    image: require('../assets/images/cartas/Jogo 8.png'),
-    alt: 'Obstáculo diário 8 sobre manejo glicêmico.',
-  },
-  {
-    id: 's8',
-    pairId: 'par_8',
-    type: 'SOLUCAO',
-    image: require('../assets/images/cartas/Jogo 8.8.png'),
-    alt: 'Solução recomendada para o obstáculo 8.',
   },
 ];
