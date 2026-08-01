@@ -3,21 +3,23 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
-  Dimensions,
   Image,
   ImageBackground,
   PanResponder,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
 import VictoryModal from '../../../components/VictoryModal';
 import { useGame } from '../../../context/GameContext';
 
-const { width, height } = Dimensions.get('window');
+const WEB_NO_DRAG_STYLE =
+  Platform.OS === 'web' ? ({ touchAction: 'none', userSelect: 'none' } as any) : {};
 
 const TAP_TOLERANCE = 10;
 
@@ -39,6 +41,8 @@ function DraggableItem({
   onTap,
   disabled,
   zIndex = 100,
+  opacityAnim,
+  snapTarget,
 }: {
   name: string;
   imageSource: any;
@@ -50,6 +54,8 @@ function DraggableItem({
   onTap?: (name: string) => void;
   disabled?: boolean;
   zIndex?: number;
+  opacityAnim?: Animated.Value;
+  snapTarget?: { x: number; y: number } | null;
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -61,6 +67,9 @@ function DraggableItem({
 
   const onTapRef = useRef(onTap);
   onTapRef.current = onTap;
+
+  const snapTargetRef = useRef(snapTarget);
+  snapTargetRef.current = snapTarget;
 
   const resetPosition = () => {
     Animated.spring(pan, {
@@ -93,7 +102,17 @@ function DraggableItem({
         }
 
         const dropResult = onDropRef.current(name, gesture.moveX, gesture.moveY);
+
         if (dropResult instanceof Promise) {
+          const target = snapTargetRef.current;
+          if (target) {
+            Animated.timing(pan, {
+              toValue: target,
+              duration: 220,
+              useNativeDriver: false,
+            }).start();
+          }
+
           await dropResult;
         }
 
@@ -121,62 +140,103 @@ function DraggableItem({
           elevation: 10,
           zIndex,
           transform: pan.getTranslateTransform(),
+          opacity: opacityAnim ?? 1,
         },
+        WEB_NO_DRAG_STYLE,
       ]}
     >
-      <Image source={imageSource} style={{ width: '100%', height: '100%' }} resizeMode="contain" />
+      <Image
+        source={imageSource}
+        style={{ width: '100%', height: '100%' }}
+        resizeMode="contain"
+        {...(Platform.OS === 'web' ? ({ draggable: false } as any) : {})}
+      />
     </Animated.View>
   );
 }
 
-function MiniatureSetup() {
+function MiniatureSetup({ antAnimatedStyle }: { antAnimatedStyle?: any }) {
   return (
     <View style={styles.miniatureContainer}>
       <Image
         source={require('../../../assets/images/lixo_infectante.png')}
-        style={[styles.miniItemAbsolute, { left: 120, bottom: 100, width: 50, height: 60 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '48%', bottom: '50%', width: '20%', height: '30%' },
+        ]}
         resizeMode="contain"
       />
-      <Image
-        source={require('../../../assets/images/glicemilton_aferindo.png')}
-        style={[styles.miniItemAbsolute, { left: 190, bottom: 60, width: 110, height: 100 }]}
-        resizeMode="contain"
-      />
+
+      <Animated.View
+        style={[
+          styles.miniItemAbsolute,
+          { left: '76%', bottom: '30%', width: '44%', height: '50%' },
+          antAnimatedStyle,
+        ]}
+      >
+        <Image
+          source={require('../../../assets/images/glicemilton_aferindo.png')}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="contain"
+        />
+      </Animated.View>
+
       <Image
         source={require('../../../assets/images/pedra.png')}
-        style={[styles.miniItemAbsolute, { left: 160, bottom: 0, width: 100, height: 150 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '64%', bottom: '0%', width: '40%', height: '75%' },
+        ]}
         resizeMode="stretch"
       />
       <Image
         source={require('../../../assets/images/caixa_de_perfurocortantes.png')}
-        style={[styles.miniItemAbsolute, { left: 165, bottom: 55, width: 50, height: 60 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '66%', bottom: '27.5%', width: '20%', height: '30%' },
+        ]}
         resizeMode="contain"
       />
       <Image
         source={require('../../../assets/images/alcool.png')}
-        style={[styles.miniItemAbsolute, { left: 202, bottom: 70, width: 15, height: 30 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '80.8%', bottom: '35%', width: '6%', height: '15%' },
+        ]}
         resizeMode="contain"
       />
       <Image
         source={require('../../../assets/images/lanceta_abrindo.png')}
-        style={[styles.miniItemAbsolute, { left: 215, bottom: 64, width: 20, height: 20 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '86%', bottom: '32%', width: '8%', height: '10%' },
+        ]}
         resizeMode="contain"
       />
 
       <Image
         source={require('../../../assets/images/algodao_seco.png')}
-        style={[styles.miniItemAbsolute, { left: 195, bottom: 58, width: 15, height: 15 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '78%', bottom: '29%', width: '6%', height: '7.5%' },
+        ]}
         resizeMode="contain"
       />
       <Image
         source={require('../../../assets/images/algodao_seco.png')}
-        style={[styles.miniItemAbsolute, { left: 208, bottom: 58, width: 15, height: 15 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '83.2%', bottom: '29%', width: '6%', height: '7.5%' },
+        ]}
         resizeMode="contain"
       />
 
       <Image
         source={require('../../../assets/images/glicosimetro_desligado.png')}
-        style={[styles.miniItemAbsolute, { left: 210, bottom: 48, width: 20, height: 25 }]}
+        style={[
+          styles.miniItemAbsolute,
+          { left: '84%', bottom: '24%', width: '8%', height: '12.5%' },
+        ]}
         resizeMode="contain"
       />
     </View>
@@ -207,10 +267,12 @@ const INSTRUCOES: Record<FasePasso, string> = {
 };
 
 function AfericaoGame({ onFinish }: { onFinish: () => void }) {
+  const { width, height } = useWindowDimensions();
+
   const [fase, setFase] = useState<FasePasso>('SELECIONAR_DEDO');
 
   const [sangueVisible, setSangueVisible] = useState(false);
-  const [isSpraying, setIsSpraying] = useState(false);
+  const [alcoolImagem, setAlcoolImagem] = useState<'normal' | 'borrifando'>('normal');
   const [lancetaAberta, setLancetaAberta] = useState(false);
   const [lancetaDescartada, setLancetaDescartada] = useState(false);
   const [glicosimetroLigado, setGlicosimetroLigado] = useState(false);
@@ -309,11 +371,11 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
       case 'MOLHAR_ALGODAO': {
         if (itemName === 'alcool' && acertouAlgodao2) {
           setInputBloqueado(true);
-          setIsSpraying(true);
+          setAlcoolImagem('borrifando');
 
           return new Promise<void>((resolve) => {
             setTimeout(() => {
-              setIsSpraying(false);
+              setAlcoolImagem('normal');
               setAlgodao2Molhado(true);
               setInputBloqueado(false);
               setFase('ASSEPSIA');
@@ -432,23 +494,23 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
 
   const POSICAO = {
     alcool: {
-      afastado: { x: cenaWidth * 0.45, y: cenaHeight * -1.2 + offsetTop },
+      afastado: { x: cenaWidth * 0.45, y: cenaHeight * -0.7 + offsetTop },
       zoom: { x: cenaWidth * 0.65, y: cenaHeight * -1.2 + offsetTop },
     },
     lanceta: {
-      afastado: { x: cenaWidth * 0.65, y: cenaHeight * -0.7 + offsetTop },
+      afastado: { x: cenaWidth * 0.65, y: cenaHeight * -0.2 + offsetTop },
       zoom: { x: cenaWidth * 0.35, y: cenaHeight * -1.3 + offsetTop },
     },
     algodao1: {
-      afastado: { x: cenaWidth * 0.28, y: cenaHeight * -0.67 + offsetTop },
+      afastado: { x: cenaWidth * 0.28, y: cenaHeight * -0.2 + offsetTop },
       zoom: { x: cenaWidth * 0.05, y: cenaHeight * -0.75 + offsetTop },
     },
     algodao2: {
-      afastado: { x: cenaWidth * 0.42, y: cenaHeight * -0.67 + offsetTop },
+      afastado: { x: cenaWidth * 0.42, y: cenaHeight * -0.2 + offsetTop },
       zoom: { x: cenaWidth * 0.25, y: cenaHeight * -0.75 + offsetTop },
     },
     glicosimetro: {
-      afastado: { x: cenaWidth * 0.5, y: cenaHeight * -0.47 + offsetTop },
+      afastado: { x: cenaWidth * 0.5, y: cenaHeight * -0.1 + offsetTop },
       zoom: { x: cenaWidth * 0.4, y: cenaHeight * -0.1 + offsetTop },
     },
   };
@@ -457,7 +519,7 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
     dedo: {
       afastado: {
         left: '20%' as const,
-        top: '31%' as const,
+        top: '76%' as const,
         width: '15%' as const,
         height: '7%' as const,
       },
@@ -501,7 +563,7 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
   const VISUAL = {
     lixeira: {
       afastado: {
-        bottom: '180%' as const,
+        bottom: '140%' as const,
         left: '2%' as const,
         width: cenaHeight * 1 * RATIO.lixeira,
         height: cenaHeight * 1.5,
@@ -515,7 +577,7 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
     },
     caixaPerfuro: {
       afastado: {
-        bottom: '90%' as const,
+        bottom: '45%' as const,
         left: '15%' as const,
         width: cenaHeight * 1 * RATIO.caixaPerfuro,
         height: cenaHeight * 2,
@@ -530,6 +592,17 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
   };
 
   const c = cenarioAfastado ? 'afastado' : 'zoom';
+  const alcoolItemWidth =
+    (cenarioAfastado ? ESCALA.alcool.afastado : ESCALA.alcool.zoom) * RATIO.alcoolBorrifando;
+  const alcoolItemHeight = cenarioAfastado ? ESCALA.alcool.afastado : ESCALA.alcool.zoom;
+  const algodao2ItemWidth = ESCALA.algodao[c] * 0.5 * RATIO.algodao;
+  const algodao2ItemHeight = ESCALA.algodao[c] * 0.5;
+  const algodao2CenterX = POSICAO.algodao2[c].x + algodao2ItemWidth / 2;
+  const algodao2CenterY = POSICAO.algodao2[c].y + algodao2ItemHeight / 2;
+  const alcoolSnapTarget = {
+    x: algodao2CenterX - alcoolItemWidth / 15 - POSICAO.alcool[c].x,
+    y: algodao2CenterY - alcoolItemHeight / 4 - POSICAO.alcool[c].y,
+  };
 
   const zIndexAlcool = alcoolDisabled ? 10 : 999;
   const zIndexAlgodao2 = algodao2Disabled ? 11 : 999;
@@ -538,7 +611,7 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
   const zIndexGlicosimetro = glicosimetroDisabled ? 14 : 999;
 
   return (
-    <View style={styles.gameContainer}>
+    <View style={[styles.gameContainer, WEB_NO_DRAG_STYLE]}>
       <View style={styles.instructionBadge}>
         <Text style={styles.floatingTitleText}>{INSTRUCOES[fase]}</Text>
       </View>
@@ -592,7 +665,10 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
             </>
           ) : (
             <>
-              <View style={styles.fullscreenHandWrapper} pointerEvents="box-none">
+              <View
+                style={[styles.fullscreenHandWrapper, { width: cenaWidth, height: height + 100 }]}
+                pointerEvents="box-none"
+              >
                 <Image
                   source={require('../../../assets/images/fundo_mão.png')}
                   style={{ width: '100%', height: '100%' }}
@@ -677,12 +753,11 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
             />
           )}
         </View>
-
         <DraggableItem
           key={`alcool-${c}-${ESCALA.alcool[c]}-${POSICAO.alcool[c].x}-${POSICAO.alcool[c].y}`}
           name="alcool"
           imageSource={
-            isSpraying
+            alcoolImagem === 'borrifando'
               ? require('../../../assets/images/alcool_borrifando.png')
               : require('../../../assets/images/alcool.png')
           }
@@ -695,6 +770,7 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
           onDrop={handleDrop}
           disabled={alcoolDisabled}
           zIndex={zIndexAlcool}
+          snapTarget={alcoolSnapTarget}
         />
 
         {!algodao1Descartado && (
@@ -743,29 +819,24 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
             zIndex={zIndexLanceta}
           />
         )}
-
-        {!algodao2Usado && (
-          <DraggableItem
-            key={`algodao2-${c}-${ESCALA.algodao[c]}-${POSICAO.algodao2[c].x}-${POSICAO.algodao2[c].y}`}
-            name="algodao2"
-            imageSource={
-              algodao2Molhado
-                ? require('../../../assets/images/algodao_molhado.png')
-                : require('../../../assets/images/algodao_seco.png')
-            }
-            itemWidth={
-              (cenarioAfastado ? ESCALA.algodao.afastado : ESCALA.algodao.zoom) *
-              0.5 *
-              RATIO.algodao
-            }
-            itemHeight={(cenarioAfastado ? ESCALA.algodao.afastado : ESCALA.algodao.zoom) * 0.5}
-            startX={POSICAO.algodao2[c].x}
-            startY={POSICAO.algodao2[c].y}
-            onDrop={handleDrop}
-            disabled={algodao2Disabled}
-            zIndex={zIndexAlgodao2}
-          />
-        )}
+        <DraggableItem
+          key={`algodao2-${c}-${ESCALA.algodao[c]}-${POSICAO.algodao2[c].x}-${POSICAO.algodao2[c].y}`}
+          name="algodao2"
+          imageSource={
+            algodao2Molhado
+              ? require('../../../assets/images/algodao_molhado.png')
+              : require('../../../assets/images/algodao_seco.png')
+          }
+          itemWidth={
+            (cenarioAfastado ? ESCALA.algodao.afastado : ESCALA.algodao.zoom) * 0.5 * RATIO.algodao
+          }
+          itemHeight={(cenarioAfastado ? ESCALA.algodao.afastado : ESCALA.algodao.zoom) * 0.5}
+          startX={POSICAO.algodao2[c].x}
+          startY={POSICAO.algodao2[c].y}
+          onDrop={handleDrop}
+          disabled={algodao2Disabled}
+          zIndex={zIndexAlgodao2}
+        />
 
         <DraggableItem
           key={`glicosimetro-${c}-${ESCALA.glicosimetro[c]}-${POSICAO.glicosimetro[c].x}-${POSICAO.glicosimetro[c].y}`}
@@ -848,6 +919,8 @@ function AfericaoGame({ onFinish }: { onFinish: () => void }) {
 export default function VigiarTaxasScreen() {
   const router = useRouter();
 
+  const { height: windowHeight } = useWindowDimensions();
+
   const { addPoints } = useGame();
   const [showVictory, setShowVictory] = useState(false);
 
@@ -859,6 +932,51 @@ export default function VigiarTaxasScreen() {
   const [showIntroBtn, setShowIntroBtn] = useState(false);
   const btnOpacity = useRef(new Animated.Value(0)).current;
   const homePulseAnim = useRef(new Animated.Value(1)).current;
+
+  const handleGlicemiltonPress = () => {
+    setStep('game');
+  };
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+
+    const html = document.documentElement;
+    const body = document.body;
+
+    const previous = {
+      htmlOverflow: html.style.overflow,
+      htmlTouchAction: (html.style as any).touchAction,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: (body.style as any).overscrollBehavior,
+      bodyPosition: body.style.position,
+      bodyWidth: body.style.width,
+      bodyHeight: body.style.height,
+    };
+
+    html.style.overflow = 'hidden';
+    (html.style as any).touchAction = 'none';
+    body.style.overflow = 'hidden';
+    (body.style as any).overscrollBehavior = 'none';
+    body.style.position = 'fixed';
+    body.style.width = '100%';
+    body.style.height = '100%';
+
+    const preventTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+    document.addEventListener('touchmove', preventTouchMove, { passive: false });
+
+    return () => {
+      html.style.overflow = previous.htmlOverflow;
+      (html.style as any).touchAction = previous.htmlTouchAction;
+      body.style.overflow = previous.bodyOverflow;
+      (body.style as any).overscrollBehavior = previous.bodyOverscroll;
+      body.style.position = previous.bodyPosition;
+      body.style.width = previous.bodyWidth;
+      body.style.height = previous.bodyHeight;
+      document.removeEventListener('touchmove', preventTouchMove);
+    };
+  }, []);
 
   const [selectedGuess, setSelectedGuess] = useState<string | null>(null);
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
@@ -1035,13 +1153,6 @@ export default function VigiarTaxasScreen() {
                   </TouchableOpacity>
                 </Animated.View>
               </View>
-              <View style={styles.characterStory} pointerEvents="none">
-                <Image
-                  source={require('../../../assets/images/glicemilton_feliz.png')}
-                  style={styles.characterLarge}
-                  resizeMode="contain"
-                />
-              </View>
               <View style={styles.storyContent}>
                 <View style={styles.textBackdrop}>
                   <Text style={styles.floatingText}>
@@ -1055,6 +1166,13 @@ export default function VigiarTaxasScreen() {
                 >
                   <Ionicons name="chevron-forward" size={32} color="white" />
                 </TouchableOpacity>
+              </View>
+              <View style={styles.characterFlexZone} pointerEvents="none">
+                <Image
+                  source={require('../../../assets/images/glicemilton_feliz.png')}
+                  style={styles.characterImageFlex}
+                  resizeMode="contain"
+                />
               </View>
             </SafeAreaView>
           </ImageBackground>
@@ -1077,13 +1195,6 @@ export default function VigiarTaxasScreen() {
                   </TouchableOpacity>
                 </Animated.View>
               </View>
-              <View style={styles.characterBottomCenter} pointerEvents="none">
-                <Image
-                  source={require('../../../assets/images/glicemilton_feliz.png')}
-                  style={styles.characterLarge}
-                  resizeMode="contain"
-                />
-              </View>
               <View style={styles.storyContent}>
                 <Text style={styles.floatingTitle}>Precisa de instruções?</Text>
                 <View style={styles.thumbsContainerRow}>
@@ -1094,6 +1205,13 @@ export default function VigiarTaxasScreen() {
                     <Ionicons name="thumbs-down" size={50} color="white" />
                   </TouchableOpacity>
                 </View>
+              </View>
+              <View style={styles.characterFlexZone} pointerEvents="none">
+                <Image
+                  source={require('../../../assets/images/glicemilton_feliz.png')}
+                  style={styles.characterImageFlex}
+                  resizeMode="contain"
+                />
               </View>
             </SafeAreaView>
           </ImageBackground>
@@ -1337,16 +1455,14 @@ export default function VigiarTaxasScreen() {
               <View style={styles.clickTitleContainer}>
                 <Text style={styles.floatingTitle}>Clique no Glicemilton!</Text>
               </View>
-
-              <View style={styles.miniatureVisualWrapper} pointerEvents="none">
+              <View style={styles.miniatureVisualWrapper} pointerEvents="box-none">
                 <MiniatureSetup />
+                <TouchableOpacity
+                  style={styles.hitboxGlicemilton}
+                  onPress={handleGlicemiltonPress}
+                  activeOpacity={0.5}
+                />
               </View>
-
-              <TouchableOpacity
-                style={styles.hitboxGlicemilton}
-                onPress={() => setStep('game')}
-                activeOpacity={0.5}
-              />
             </SafeAreaView>
           </ImageBackground>
         );
@@ -1561,8 +1677,16 @@ export default function VigiarTaxasScreen() {
         );
     }
   };
-
-  return renderContent();
+  return (
+    <View
+      style={[
+        { flex: 1, width: '100%', height: windowHeight, overflow: 'hidden' },
+        WEB_NO_DRAG_STYLE,
+      ]}
+    >
+      {renderContent()}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -1693,12 +1817,33 @@ const styles = StyleSheet.create({
   },
   introImage: { width: 170, height: 170, marginBottom: 20 },
   storyContent: {
-    flex: 1,
-    justifyContent: 'flex-start',
+    width: '100%',
     alignItems: 'center',
     paddingTop: 60,
     zIndex: 10,
     elevation: 10,
+  },
+  characterFlexZone: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 10,
+    zIndex: 1,
+  },
+  characterFlexZoneRight: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    paddingRight: 10,
+    paddingBottom: 10,
+    zIndex: 1,
+  },
+  characterImageFlex: {
+    width: '78%',
+    maxWidth: 330,
+    height: '100%',
   },
   textBackdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
@@ -1811,14 +1956,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cenaContainer: { position: 'relative', alignSelf: 'center', overflow: 'visible' },
-  rockImageBase: { position: 'absolute', bottom: '-90%', zIndex: 2 },
+  rockImageBase: { position: 'absolute', bottom: '-140%', zIndex: 2 },
 
-  characterWrapper: { position: 'absolute', right: '0%', bottom: '0%', zIndex: 5 },
+  characterWrapper: { position: 'absolute', right: '-5%', bottom: '90%', zIndex: 5 },
 
   fullscreenHandWrapper: {
     position: 'absolute',
-    width: width,
-    height: height + 100,
     bottom: -50,
     left: 0,
     zIndex: 1,
@@ -1832,8 +1975,12 @@ const styles = StyleSheet.create({
     height: '10%',
     zIndex: 11,
   },
-
-  characterImageFill: { width: '100%', height: '100%' },
+  characterImageFill: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   bloodDrop: {
     position: 'absolute',
     left: '20%',
@@ -1851,13 +1998,20 @@ const styles = StyleSheet.create({
     zIndex: 200,
     backgroundColor: 'transparent',
   },
-  miniatureVisualWrapper: { position: 'absolute', bottom: 60, left: 20, width: 250, height: 200 },
+  miniatureVisualWrapper: {
+    position: 'absolute',
+    bottom: '8%',
+    left: '5%',
+    width: '65%',
+    maxWidth: 280,
+    aspectRatio: 1.25,
+  },
   hitboxGlicemilton: {
     position: 'absolute',
-    bottom: 130,
-    left: 250,
-    width: 30,
-    height: 50,
+    bottom: '30%',
+    left: '76%',
+    width: '44%',
+    height: '50%',
     zIndex: 100,
   },
   miniatureContainer: { flex: 1 },
