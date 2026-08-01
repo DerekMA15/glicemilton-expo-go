@@ -26,7 +26,7 @@ export default function HomeScreen() {
   return (
     <View style={[styles.screenWrapper, { height }]}>
       <ImageBackground
-        source={require('../assets/images/background.jpg')}
+        source={require('../assets/images/background_consertado.png')}
         style={styles.homeArea}
         imageStyle={{ transform: [{ scale: 1.1 }, { translateX: -15 }] }}
       >
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   homeArea: {
+    position: 'absolute',
     flex: 1,
     width: '100%',
     height: '100%',
@@ -187,5 +188,11 @@ const styles = StyleSheet.create({
     height: 100,
     zIndex: 2,
   },
-  characterImage: { width: '100%', height: '100%' },
+  characterImage: {
+    position: 'absolute',
+    bottom: '10%',
+    left: '10%',
+    height: '160%',
+    width: '160%',
+  },
 });

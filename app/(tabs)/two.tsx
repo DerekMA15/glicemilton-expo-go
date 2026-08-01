@@ -30,9 +30,8 @@ export default function LoginScreen() {
   return (
     <View style={styles.screenWrapper}>
       <ImageBackground
-        source={require('../../assets/images/background.jpg')}
+        source={require('../../assets/images/background_consertado.png')}
         style={styles.homeArea}
-        imageStyle={{ transform: [{ scale: 1.1 }, { translateX: -15 }] }}
       >
         <AnimatedCloud top="5%" width={80} duration={30000} initialX={width * 0.1} opacity={0.9} />
         <AnimatedCloud
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#80A060',
   },
   screenWrapper: { flex: 1, backgroundColor: '#222' },
-  homeArea: { flex: 1, width: '100%', alignItems: 'center' },
+  homeArea: { flex: 1, width: '100%', height: '100%', alignItems: 'center' },
   welcomeArea: { position: 'absolute', top: '15%', alignItems: 'center', zIndex: 2 },
   smallText: {
     fontFamily: 'Chewy_400Regular',
@@ -233,10 +232,10 @@ const styles = StyleSheet.create({
   },
   characterPosition: {
     position: 'absolute',
-    bottom: 40,
-    left: '12%',
-    width: 100,
-    height: 100,
+    bottom: '10%',
+    left: '10%',
+    width: '100%',
+    height: '100%',
     zIndex: 2,
   },
   characterImage: { width: '100%', height: '100%' },

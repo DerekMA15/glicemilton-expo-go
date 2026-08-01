@@ -33,7 +33,20 @@ export default function DashboardScreen() {
   const { width, height } = useWindowDimensions();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+  const [languageListOpen, setLanguageListOpen] = useState(false);
+
   const [registro, setRegistro] = useState({ data: '', hora: '', condicao: '', indice: '' });
+
+  const [config, setConfig] = useState({
+    apelido: '',
+    aniversario: '',
+    tipoDiabetes: '',
+    idioma: 'Português',
+    musica: true,
+    efeitosSonoros: true,
+    notificacoes: true,
+  });
 
   const scale = useSharedValue(1);
 
@@ -68,43 +81,45 @@ export default function DashboardScreen() {
 
   return (
     <ImageBackground
-      source={require('../../assets/images/fundo_zoom.jpg')}
+      source={require('../../assets/images/fundo_zoom.png')}
       style={styles.background}
       resizeMode="cover"
-      imageStyle={{ transform: [{ scale: 1.08 }, { translateY: 15 }] }}
+      imageStyle={{ transform: [{ scale: 1.08 }, { translateY: -30 }] }}
     >
       <SafeAreaView style={[styles.safeArea, { height }]}>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity style={styles.circleButton}>
-            <MaterialCommunityIcons name="cog" size={24} color="white" />
-          </TouchableOpacity>
-
-          <Animated.View style={animatedButtonStyle}>
-            <TouchableOpacity style={styles.circleButton} onPress={() => setModalVisible(true)}>
-              <MaterialCommunityIcons name="folder" size={24} color="white" />
+        <View style={styles.topContainer}>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity style={styles.circleButton} onPress={() => setSettingsVisible(true)}>
+              <MaterialCommunityIcons name="cog" size={24} color="white" />
             </TouchableOpacity>
-          </Animated.View>
-        </View>
 
-        <View style={styles.topCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.glicemiaLabel}>
-              <View style={styles.dropIcon} />
-              <Text style={styles.cardTitle}>Glicemia</Text>
-            </View>
-            <View style={styles.progressBar}>
-              <View style={styles.progressFill} />
-            </View>
+            <Animated.View style={animatedButtonStyle}>
+              <TouchableOpacity style={styles.circleButton} onPress={() => setModalVisible(true)}>
+                <MaterialCommunityIcons name="folder" size={24} color="white" />
+              </TouchableOpacity>
+            </Animated.View>
           </View>
 
-          <View style={styles.cardBody}>
-            <View style={styles.valueRow}>
-              <Text style={[styles.glicemiaValue, { fontSize: valueFontSize }]}>104</Text>
-              <Text style={styles.glicemiaUnit}>mg/dL</Text>
+          <View style={styles.topCard}>
+            <View style={styles.cardHeader}>
+              <View style={styles.glicemiaLabel}>
+                <View style={styles.dropIcon} />
+                <Text style={styles.cardTitle}>Glicemia</Text>
+              </View>
+              <View style={styles.progressBar}>
+                <View style={styles.progressFill} />
+              </View>
             </View>
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreLabel}>Points</Text>
-              <Text style={styles.scoreValue}>{state.totalPoints}</Text>
+
+            <View style={styles.cardBody}>
+              <View style={styles.valueRow}>
+                <Text style={[styles.glicemiaValue, { fontSize: valueFontSize }]}>104</Text>
+                <Text style={styles.glicemiaUnit}>mg/dL</Text>
+              </View>
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreLabel}>Points</Text>
+                <Text style={styles.scoreValue}>{state.totalPoints}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -198,7 +213,7 @@ export default function DashboardScreen() {
         >
           <View style={styles.modalOverlay}>
             <ImageBackground
-              source={require('../../assets/images/fundo_zoom.jpg')}
+              source={require('../../assets/images/fundo_zoom.png')}
               style={styles.modalBg}
               resizeMode="cover"
             >
@@ -284,13 +299,199 @@ export default function DashboardScreen() {
             </ImageBackground>
           </View>
         </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={settingsVisible}
+          onRequestClose={() => setSettingsVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <ImageBackground
+              source={require('../../assets/images/fundo_zoom.png')}
+              style={styles.modalBg}
+              resizeMode="cover"
+            >
+              <SafeAreaView style={styles.modalSafeArea}>
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                  style={{ flex: 1 }}
+                >
+                  <View style={styles.notebookContainer}>
+                    <Text style={[styles.notebookTitle, { fontSize: titleFontSize }]}>
+                      Configurações
+                    </Text>
+
+                    <ScrollView
+                      contentContainerStyle={styles.notebookContent}
+                      showsVerticalScrollIndicator={false}
+                    >
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Apelido:
+                        </Text>
+                        <TextInput
+                          style={styles.input}
+                          value={config.apelido}
+                          onChangeText={(t) => setConfig({ ...config, apelido: t })}
+                          placeholder="Digite seu apelido..."
+                          placeholderTextColor="#A99282"
+                        />
+                      </View>
+
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Aniversário:
+                        </Text>
+                        <TextInput
+                          style={styles.input}
+                          value={config.aniversario}
+                          onChangeText={(t) => setConfig({ ...config, aniversario: t })}
+                          placeholder="Ex: 15/05/1995"
+                          placeholderTextColor="#A99282"
+                        />
+                      </View>
+
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Diabetes Mellitus tipo X:
+                        </Text>
+                        <TextInput
+                          style={styles.input}
+                          value={config.tipoDiabetes}
+                          onChangeText={(t) => setConfig({ ...config, tipoDiabetes: t })}
+                          placeholder="Ex: Tipo 1 / Tipo 2"
+                          placeholderTextColor="#A99282"
+                        />
+                      </View>
+
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Idioma:
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.dropdownButton}
+                          onPress={() => setLanguageListOpen(!languageListOpen)}
+                          activeOpacity={0.7}
+                        >
+                          <Text style={styles.dropdownButtonText}>{config.idioma}</Text>
+                          <MaterialCommunityIcons
+                            name={languageListOpen ? 'chevron-up' : 'chevron-down'}
+                            size={24}
+                            color="#6C5141"
+                          />
+                        </TouchableOpacity>
+
+                        {languageListOpen && (
+                          <View style={styles.dropdownList}>
+                            {['Português', 'Inglês', 'Espanhol'].map((lang) => (
+                              <TouchableOpacity
+                                key={lang}
+                                style={styles.dropdownOption}
+                                onPress={() => {
+                                  setConfig({ ...config, idioma: lang });
+                                  setLanguageListOpen(false);
+                                }}
+                              >
+                                <Text style={styles.dropdownOptionText}>{lang}</Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        )}
+                      </View>
+
+                      <View style={styles.settingRow}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Música:
+                        </Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.toggleBtn,
+                            config.musica ? styles.toggleOn : styles.toggleOff,
+                          ]}
+                          onPress={() => setConfig({ ...config, musica: !config.musica })}
+                          activeOpacity={0.8}
+                        >
+                          <Text style={styles.toggleBtnText}>
+                            {config.musica ? 'LIGADO' : 'DESLIGADO'}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.settingRow}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Efeitos sonoros:
+                        </Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.toggleBtn,
+                            config.efeitosSonoros ? styles.toggleOn : styles.toggleOff,
+                          ]}
+                          onPress={() =>
+                            setConfig({ ...config, efeitosSonoros: !config.efeitosSonoros })
+                          }
+                          activeOpacity={0.8}
+                        >
+                          <Text style={styles.toggleBtnText}>
+                            {config.efeitosSonoros ? 'LIGADO' : 'DESLIGADO'}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <View style={styles.settingRow}>
+                        <Text style={[styles.inputLabel, { fontSize: labelFontSize }]}>
+                          Notificações:
+                        </Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.toggleBtn,
+                            config.notificacoes ? styles.toggleOn : styles.toggleOff,
+                          ]}
+                          onPress={() =>
+                            setConfig({ ...config, notificacoes: !config.notificacoes })
+                          }
+                          activeOpacity={0.8}
+                        >
+                          <Text style={styles.toggleBtnText}>
+                            {config.notificacoes ? 'LIGADO' : 'DESLIGADO'}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      <TouchableOpacity style={styles.policyBtn}>
+                        <Text style={[styles.policyBtnText, { fontSize: labelFontSize }]}>
+                          Política de privacidade
+                        </Text>
+                      </TouchableOpacity>
+                    </ScrollView>
+
+                    <TouchableOpacity
+                      style={styles.closeModalBtn}
+                      onPress={() => {
+                        setSettingsVisible(false);
+                        setLanguageListOpen(false);
+                      }}
+                    >
+                      <MaterialCommunityIcons name="home" size={30} color="white" />
+                    </TouchableOpacity>
+                  </View>
+                </KeyboardAvoidingView>
+              </SafeAreaView>
+            </ImageBackground>
+          </View>
+        </Modal>
       </SafeAreaView>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1, width: '100%', height: '100%' },
+  background: {
+    position: 'absolute',
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   safeArea: {
     flex: 1,
     alignItems: 'center',
@@ -299,15 +500,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
+
+  topContainer: {
+    width: '100%',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   headerButtons: {
-    width: '85%',
-    maxWidth: 350,
+    width: '100%',
+    paddingHorizontal: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 10,
     marginTop: Platform.OS === 'web' ? 10 : 0,
-    zIndex: 10,
   },
   circleButton: {
     width: 44,
@@ -362,9 +568,23 @@ const styles = StyleSheet.create({
   },
   scoreLabel: { fontSize: 14, fontFamily: 'Chewy_400Regular', color: 'white' },
   scoreValue: { fontSize: 22, fontFamily: 'Chewy_400Regular', color: 'white' },
-  bottomSection: { width: '100%', alignItems: 'center', justifyContent: 'flex-end' },
-  characterImage: { width: 220, marginBottom: 5 },
-  bottomGrid: { width: '100%', alignItems: 'center', gap: 8, paddingHorizontal: 10 },
+
+  bottomSection: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  characterImage: {
+    width: 220,
+    marginBottom: 0,
+  },
+  bottomGrid: {
+    width: '100%',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingTop: 5,
+  },
   gridRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -376,7 +596,11 @@ const styles = StyleSheet.create({
   moduleIcon: { width: '100%', height: '100%', resizeMode: 'contain' },
 
   modalOverlay: { flex: 1 },
-  modalBg: { flex: 1 },
+  modalBg: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   modalSafeArea: { flex: 1 },
   notebookContainer: {
     flex: 1,
@@ -397,6 +621,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   notebookContent: { paddingBottom: 10 },
+
   inputGroup: { marginBottom: 15 },
   inputLabel: {
     fontFamily: 'Chewy_400Regular',
@@ -424,6 +649,73 @@ const styles = StyleSheet.create({
     borderBottomColor: '#D2B48C',
     paddingVertical: 5,
   },
+
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D2B48C',
+    paddingVertical: 5,
+  },
+  dropdownButtonText: {
+    fontSize: 18,
+    color: '#6C5141',
+  },
+  dropdownList: {
+    backgroundColor: 'rgba(210, 180, 140, 0.15)',
+    borderRadius: 10,
+    marginTop: 5,
+    overflow: 'hidden',
+  },
+  dropdownOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(210, 180, 140, 0.2)',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    color: '#6C5141',
+    fontWeight: 'bold',
+  },
+
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  toggleBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 2,
+  },
+  toggleOn: {
+    backgroundColor: '#8DB863',
+    borderColor: '#5B7A3E',
+  },
+  toggleOff: {
+    backgroundColor: '#D2B48C',
+    borderColor: '#A99282',
+  },
+  toggleBtnText: {
+    fontFamily: 'Chewy_400Regular',
+    color: '#FFF',
+    fontSize: 18,
+  },
+
+  policyBtn: {
+    marginTop: 10,
+    paddingVertical: 10,
+  },
+  policyBtnText: {
+    fontFamily: 'Chewy_400Regular',
+    color: '#8B5E3C',
+    textDecorationLine: 'underline',
+  },
+
   closeModalBtn: {
     alignSelf: 'center',
     backgroundColor: '#8B5E3C',

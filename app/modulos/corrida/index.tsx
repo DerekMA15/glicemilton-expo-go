@@ -21,12 +21,7 @@ import VictoryModal from '@/components/VictoryModal';
 import { RUNNER_ASSETS, RUNNER_CONFIG } from '@/constants/runner';
 
 type ScreenState =
-  | 'CONCEPT'
-  | 'ASK_INSTRUCTIONS'
-  | 'INST_STEP_1'
-  | 'INST_STEP_2'
-  | 'INST_STEP_3'
-  | 'PLAYING';
+  'CONCEPT' | 'ASK_INSTRUCTIONS' | 'INST_STEP_1' | 'INST_STEP_2' | 'INST_STEP_3' | 'PLAYING';
 
 export default function CorridaScreen() {
   const [fontsLoaded] = useFonts({ Chewy_400Regular });
@@ -127,8 +122,8 @@ export default function CorridaScreen() {
   if (currentScreen === 'CONCEPT') {
     return (
       <ImageBackground
-        source={RUNNER_ASSETS.bgLandscape}
-        style={styles.fullscreenBg}
+        source={require('@/assets/images/background_consertado.png')}
+        style={styles.introBg}
         resizeMode="cover"
       >
         <View style={styles.cardAnchor}>
@@ -174,7 +169,7 @@ export default function CorridaScreen() {
       <ImageBackground
         source={RUNNER_ASSETS.bgBlueInstructions}
         style={styles.fullscreenBg}
-        imageStyle={{ transform: [{ scale: 1.08 }, { translateY: 15 }] }}
+        imageStyle={{ transform: [{ scale: 1.0 }] }}
         resizeMode="cover"
       >
         <SafeAreaView style={styles.introContainer}>
@@ -221,7 +216,7 @@ export default function CorridaScreen() {
       <ImageBackground
         source={RUNNER_ASSETS.bgBlueInstructions}
         style={styles.fullscreenBg}
-        imageStyle={{ transform: [{ scale: 1.12 }] }}
+        imageStyle={{ transform: [{ scale: 1.0 }] }}
         resizeMode="cover"
       >
         <SafeAreaView style={styles.instructionContainer}>
@@ -280,7 +275,7 @@ export default function CorridaScreen() {
       <ImageBackground
         source={RUNNER_ASSETS.bgBlueInstructions}
         style={styles.fullscreenBg}
-        imageStyle={{ transform: [{ scale: 1.12 }] }}
+        imageStyle={{ transform: [{ scale: 1.0 }] }}
         resizeMode="cover"
       >
         <SafeAreaView style={styles.instructionContainer}>
@@ -339,7 +334,7 @@ export default function CorridaScreen() {
       <ImageBackground
         source={RUNNER_ASSETS.bgBlueInstructions}
         style={styles.fullscreenBg}
-        imageStyle={{ transform: [{ scale: 1.12 }] }}
+        imageStyle={{ transform: [{ scale: 1.0 }] }}
         resizeMode="cover"
       >
         <SafeAreaView style={styles.instructionContainer}>
@@ -402,7 +397,7 @@ export default function CorridaScreen() {
       <ImageBackground
         source={RUNNER_ASSETS.bgdirtroad}
         style={{ flex: 1, width: '100%', height: '100%' }}
-        imageStyle={{ transform: [{ scale: 1.08 }, { translateY: 15 }] }}
+        imageStyle={{ transform: [{ scale: 1.0 }] }}
         resizeMode="cover"
       >
         <View style={{ position: 'absolute', top: insets.top + 90, left: 20, zIndex: 99 }}>
@@ -491,13 +486,21 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    overflow: 'hidden',
   },
-  fullscreenBg: {
+  introBg: {
     flex: 1,
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  fullscreenBg: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
   },
   homeButton: {
     width: 70,
@@ -527,6 +530,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   questionTitle: {
+    top: '2.8%',
     fontFamily: 'Chewy_400Regular',
     fontSize: 36,
     color: 'white',
@@ -562,38 +566,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 60,
     width: '100%',
+    overflow: 'hidden',
   },
   instructionCard: {
     backgroundColor: 'white',
     alignSelf: 'center',
     width: '90%',
     maxWidth: 380,
+    height: 280,
     borderRadius: 20,
-    padding: 20,
+    padding: 16,
     elevation: 8,
     marginTop: 10,
+    justifyContent: 'space-between',
   },
   instructionHeader: {
     fontSize: 30,
     fontFamily: 'Chewy_400Regular',
     color: '#6D4C41',
-    marginBottom: 15,
+    marginBottom: 5,
     textAlign: 'center',
   },
   comparisonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     width: '100%',
-    paddingVertical: 10,
+    flex: 1,
   },
   comparisonItem: {
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'center',
+    width: 130,
   },
   itemIcon: {
-    width: 80,
-    height: 160,
-    marginBottom: 6,
+    width: 200,
+    height: 200,
+    marginBottom: -10,
   },
   characterBottomRight: {
     position: 'absolute',

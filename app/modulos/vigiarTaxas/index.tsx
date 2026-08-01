@@ -980,7 +980,7 @@ export default function VigiarTaxasScreen() {
       case 'intro':
         return (
           <ImageBackground
-            source={require('../../../assets/images/background.jpg')}
+            source={require('../../../assets/images/background_consertado.png')}
             style={styles.background}
             resizeMode="cover"
           >
@@ -1022,7 +1022,7 @@ export default function VigiarTaxasScreen() {
       case 'story':
         return (
           <ImageBackground
-            source={require('../../../assets/images/background.jpg')}
+            source={require('../../../assets/images/background_consertado.png')}
             style={styles.background}
           >
             <SafeAreaView style={styles.safeArea}>
@@ -1063,7 +1063,7 @@ export default function VigiarTaxasScreen() {
       case 'question':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1102,7 +1102,7 @@ export default function VigiarTaxasScreen() {
       case 'inst1':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1161,7 +1161,7 @@ export default function VigiarTaxasScreen() {
       case 'inst2':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1220,7 +1220,7 @@ export default function VigiarTaxasScreen() {
       case 'reminder':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1254,7 +1254,7 @@ export default function VigiarTaxasScreen() {
       case 'reference':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1273,7 +1273,7 @@ export default function VigiarTaxasScreen() {
                 <Text style={styles.tableSectionTitle}>Em JEJUM</Text>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>&lt; 70 mg/dL</Text>
-                  <Text style={styles.tableRight}>Hipoglicemia</Text>
+                  <Text style={styles.tableRight}>Abaixo da meta</Text>
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>De 70 a 99 mg/dL</Text>
@@ -1281,7 +1281,7 @@ export default function VigiarTaxasScreen() {
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>De 100 a 125 mg/dL</Text>
-                  <Text style={styles.tableRight}>Hiper</Text>
+                  <Text style={styles.tableRight}>Acima da meta</Text>
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>&gt; 126 mg/dL</Text>
@@ -1292,7 +1292,7 @@ export default function VigiarTaxasScreen() {
                 </Text>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>&lt; 70 mg/dL</Text>
-                  <Text style={styles.tableRight}>Hipo</Text>
+                  <Text style={styles.tableRight}>Abaixo da meta</Text>
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>De 70 a 140 mg/dL</Text>
@@ -1300,7 +1300,7 @@ export default function VigiarTaxasScreen() {
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>De 140 a 199 mg/dL</Text>
-                  <Text style={styles.tableRight}>Hiper</Text>
+                  <Text style={styles.tableRight}>Acima da meta</Text>
                 </View>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableLeft}>&gt; 200 mg/dL</Text>
@@ -1320,7 +1320,7 @@ export default function VigiarTaxasScreen() {
       case 'click_glicemilton':
         return (
           <ImageBackground
-            source={require('../../../assets/images/background.jpg')}
+            source={require('../../../assets/images/background_consertado.png')}
             style={styles.background}
           >
             <SafeAreaView style={styles.safeArea}>
@@ -1354,7 +1354,7 @@ export default function VigiarTaxasScreen() {
       case 'game':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_zoom.jpg')}
+            source={require('../../../assets/images/fundo_zoom.png')}
             style={styles.background}
           >
             <SafeAreaView style={styles.safeAreaCenter}>
@@ -1375,7 +1375,7 @@ export default function VigiarTaxasScreen() {
       case 'context_selection':
         return (
           <ImageBackground
-            source={require('../../../assets/images/fundo_azul.jpg')}
+            source={require('../../../assets/images/fundo_azul.png')}
             style={styles.background}
             imageStyle={{ transform: [{ scale: 1.12 }] }}
           >
@@ -1414,7 +1414,7 @@ export default function VigiarTaxasScreen() {
       case 'result_interpretation':
         return (
           <ImageBackground
-            source={require('../../../assets/images/background.jpg')}
+            source={require('../../../assets/images/background_consertado.png')}
             style={styles.background}
           >
             <SafeAreaView style={styles.safeAreaCenter}>
@@ -1444,7 +1444,7 @@ export default function VigiarTaxasScreen() {
                     style={getButtonStyle('hipo')}
                     onPress={() => verificarInterpretacao('hipo')}
                   >
-                    <Text style={getButtonTextStyle('hipo')}>Hipoglicemia</Text>
+                    <Text style={getButtonTextStyle('hipo')}>Abaixo da meta</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.8}
@@ -1458,7 +1458,7 @@ export default function VigiarTaxasScreen() {
                     style={getButtonStyle('hiper')}
                     onPress={() => verificarInterpretacao('hiper')}
                   >
-                    <Text style={getButtonTextStyle('hiper')}>Hiper</Text>
+                    <Text style={getButtonTextStyle('hiper')}>Acima da Meta</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.8}

@@ -3,8 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Lane, RUNNER_ASSETS, RUNNER_CONFIG, RunnerSpawnItem } from '../../constants/runner';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const TRACK_HEIGHT = SCREEN_HEIGHT * 0.7;
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const ITEM_WIDTH = RUNNER_CONFIG.ITEM_SIZE * 3.0;
+const ITEM_HEIGHT = RUNNER_CONFIG.ITEM_SIZE * 3.0;
+const PLAYER_WIDTH = RUNNER_CONFIG.PLAYER_WIDTH * 2.5;
+const PLAYER_HEIGHT = RUNNER_CONFIG.PLAYER_HEIGHT * 1.6;
 
 interface RunnerGameProps {
   currentHealth: number;
@@ -27,14 +31,17 @@ export default function RunnerGame({
   const [currentLane, setCurrentLane] = useState<Lane>(0);
   const [activeItems, setActiveItems] = useState<ActiveItem[]>([]);
   const [score, setScore] = useState<number>(0);
+  const [trackHeight, setTrackHeight] = useState<number>(SCREEN_HEIGHT * 0.55);
 
   const scoreRef = useRef(score);
   const healthRef = useRef(currentHealth);
+  const trackHeightRef = useRef(trackHeight);
 
   useEffect(() => {
     scoreRef.current = score;
     healthRef.current = currentHealth;
-  }, [score, currentHealth]);
+    trackHeightRef.current = trackHeight;
+  }, [score, currentHealth, trackHeight]);
 
   useEffect(() => {
     if (gameStatus !== 'PLAYING') return;
@@ -55,7 +62,7 @@ export default function RunnerGame({
         type: isGood ? 'GOOD' : 'BAD',
         label: labelSorteado,
         lane: randomLane,
-        y: -RUNNER_CONFIG.ITEM_SIZE,
+        y: -ITEM_HEIGHT,
       };
 
       setActiveItems((prev) => [...prev, newItem]);
@@ -70,11 +77,12 @@ export default function RunnerGame({
     const gameLoop = setInterval(() => {
       setActiveItems((prevItems) => {
         const updatedItems: ActiveItem[] = [];
+        const currentTrackH = trackHeightRef.current;
 
         for (let item of prevItems) {
           const nextY = item.y + RUNNER_CONFIG.INITIAL_SPEED;
 
-          if (nextY >= TRACK_HEIGHT - RUNNER_CONFIG.COLLISION_Y_RANGE && item.y < TRACK_HEIGHT) {
+          if (nextY >= currentTrackH - RUNNER_CONFIG.COLLISION_Y_RANGE && item.y < currentTrackH) {
             if (item.lane === currentLane) {
               if (item.type === 'GOOD') {
                 const newScore = scoreRef.current + 10;
@@ -95,7 +103,7 @@ export default function RunnerGame({
             }
           }
 
-          if (nextY >= TRACK_HEIGHT) {
+          if (nextY >= currentTrackH) {
             continue;
           }
 
@@ -130,7 +138,13 @@ export default function RunnerGame({
 
   return (
     <View style={styles.container}>
-      <View style={styles.trackContainer}>
+      <View
+        style={styles.trackContainer}
+        onLayout={(e) => {
+          const { height } = e.nativeEvent.layout;
+          if (height > 0) setTrackHeight(height);
+        }}
+      >
         <View style={styles.lane} />
         <View style={styles.lane} />
 
@@ -140,7 +154,8 @@ export default function RunnerGame({
             style={[
               styles.fallingItem,
               {
-                left: item.lane === 0 ? '15%' : '60%',
+                left: item.lane === 0 ? '25%' : '75%',
+                marginLeft: -ITEM_WIDTH / 2,
                 top: item.y,
               },
             ]}
@@ -157,7 +172,8 @@ export default function RunnerGame({
           style={[
             styles.player,
             {
-              left: currentLane === 0 ? '12.5%' : '57.5%',
+              left: currentLane === 0 ? '25%' : '75%',
+              marginLeft: -PLAYER_WIDTH / 2,
             },
           ]}
         >
@@ -175,7 +191,7 @@ export default function RunnerGame({
           onPress={() => setCurrentLane(0)}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={38} color="white" />
+          <Ionicons name="arrow-back" size={36} color="white" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -183,7 +199,7 @@ export default function RunnerGame({
           onPress={() => setCurrentLane(1)}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-forward" size={38} color="white" />
+          <Ionicons name="arrow-forward" size={36} color="white" />
         </TouchableOpacity>
       </View>
     </View>
@@ -197,7 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   trackContainer: {
-    height: TRACK_HEIGHT,
+    flex: 1,
     width: '100%',
     flexDirection: 'row',
     position: 'relative',
@@ -209,32 +225,32 @@ const styles = StyleSheet.create({
   },
   fallingItem: {
     position: 'absolute',
-    width: RUNNER_CONFIG.ITEM_SIZE * 2.0,
-    height: RUNNER_CONFIG.ITEM_SIZE * 2.0,
+    width: ITEM_WIDTH,
+    height: ITEM_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
   },
   player: {
     position: 'absolute',
     bottom: 10,
-    width: RUNNER_CONFIG.PLAYER_WIDTH * 1.6,
-    height: RUNNER_CONFIG.PLAYER_HEIGHT * 1.6,
+    width: PLAYER_WIDTH,
+    height: PLAYER_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
   },
   controlsContainer: {
-    flex: 1,
+    height: 95,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 30,
     backgroundColor: 'transparent',
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   hugeAnalogButton: {
-    width: 85,
-    height: 85,
-    borderRadius: 42.5,
+    width: 75,
+    height: 75,
+    borderRadius: 37.5,
     backgroundColor: 'rgba(109, 83, 71, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
