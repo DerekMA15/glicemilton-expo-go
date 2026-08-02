@@ -98,7 +98,7 @@ export default function CartoesScreen() {
               />
 
               <Text style={styles.introText}>
-                No manejo do diabetes, a prevenção activa de picos (hiper) e quedas (hipoglicemia) é
+                No manejo do diabetes, a prevenção ativa de picos (hiper) e quedas (hipoglicemia) é
                 crucial. Agir nas duas frentes é o segredo para o bom controle glicêmico.
               </Text>
 
